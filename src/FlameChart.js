@@ -1,9 +1,18 @@
 import React, {PureComponent} from 'react';
 import {FixedSizeList as List} from 'react-window';
 import {convertData} from './utils';
+import memoize from 'memoize-one';
+
+const memoizedConverData = memoize(convertData);
+
+const getItemData = memoize((listData, width) => ({
+	listData,
+	width,
+}))
 
 export default function FlameChart ({data, width, height}) {
-	const listData = convertData(data);
+	const listData = memoizedConverData(data);
+	const itemData = getItemData(listData, width);
 
 	return (
 		<List
@@ -11,11 +20,7 @@ export default function FlameChart ({data, width, height}) {
 			itemCount={listData.length}
 			itemSize={35}
 			width={width}
-
-			itemData={{
-				listData,
-				width
-			}}
+			itemData={itemData}
 		>
 			{ListItem}
 		</List>
