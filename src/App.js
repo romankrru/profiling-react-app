@@ -1,28 +1,37 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import FlameChart from './FlameChart';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+	state = {
+		data: null,
+	}
+
+	loadData = () => {
+		fetch('./data.json')
+			.then(r => r.json())
+			.then(data => this.setState({data: data}))
+	}
+
+	render() {
+		if (!this.state.data)
+			return <button onClick={this.loadData}>Load data</button>
+
+		return (
+			<div className="App">
+				<AutoSizer>
+					{({height, width}) => (
+						<FlameChart
+							width={width}
+							height={height}
+							data={this.state.data}
+						/>
+					)}
+				</AutoSizer>
+			</div>
+		)
+	}
 }
 
 export default App;
